@@ -26,6 +26,8 @@ Or install it yourself as:
 
 `expect_relationship`
 
+`expect_relationship_in_list`
+
 `expect_item_count`
 
 `expect_item_in_list`

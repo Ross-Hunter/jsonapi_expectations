@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["ross-hunter@ross-hunter.com"]
 
   spec.summary       = %q{Expectation helpers for testing your jsonapi compliant api}
-  spec.homepage      = "http://ross-hunter.com"
+  spec.homepage      = "https://github.com/Ross-Hunter/jsonapi_expectations"
   spec.license       = "MIT"
 
   spec.files         = ['lib/jsonapi_expectations.rb']
