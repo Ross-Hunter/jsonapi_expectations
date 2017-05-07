@@ -3,6 +3,7 @@ require 'airborne'
 
 module JsonapiExpectations
   def expect_attributes attrs
+    expect(json_body[:data]).to_not be_empty
     expect_json 'data.attributes', dasherize_keys(attrs)
   end
 
@@ -39,6 +40,11 @@ module JsonapiExpectations
         expect_linkage_data location, { type: type, id: opts[:id] }, opts[:included]
       end
     end
+  end
+
+  def expect_relationship_in_list opts
+    opts[:in_list] = true
+    expect_relationship opts
   end
 
   def expect_item_count number
