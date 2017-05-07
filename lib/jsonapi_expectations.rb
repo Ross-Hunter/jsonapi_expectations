@@ -1,7 +1,7 @@
 require "jsonapi_expectations/version"
+require 'airborne'
 
 module JsonapiExpectations
-  # Your code goes here..module ExpectationHelpers
   def expect_attributes attrs
     expect_json 'data.attributes', dasherize_keys(attrs)
   end
@@ -41,12 +41,8 @@ module JsonapiExpectations
     end
   end
 
-  def expect_item_to_not_be_in_list dont_find_me, opts = {}
-    opts[:type] ||= jsonapi_type dont_find_me
-    expect(json_body[:data]).to_not be_empty
-    json_body[:data].each do |item|
-      expect(jsonapi_match?(dont_find_me, item, opts[:type])).to be_falsey
-    end
+  def expect_item_count number
+    expect_json_sizes data: number
   end
 
   def expect_item_in_list find_me, opts = {}
@@ -58,8 +54,12 @@ module JsonapiExpectations
     expect(found).to be_truthy
   end
 
-  def expect_item_count number
-    expect_json_sizes data: number
+  def expect_item_to_not_be_in_list dont_find_me, opts = {}
+    opts[:type] ||= jsonapi_type dont_find_me
+    expect(json_body[:data]).to_not be_empty
+    json_body[:data].each do |item|
+      expect(jsonapi_match?(dont_find_me, item, opts[:type])).to be_falsey
+    end
   end
 
   ## Finder helpers
@@ -84,7 +84,7 @@ module JsonapiExpectations
   end
 
   def dasherize_keys hash
-    hash.deep_transform_keys { |key| key.to_s.dasherize.to_sym }
+    hash.deep_transform_keys { |key| key.to_s.tr('_', '-').to_sym }
   end
 
   def jsonapi_match? model, data, type
@@ -92,6 +92,6 @@ module JsonapiExpectations
   end
 
   def jsonapi_type model
-    model.class.to_s.underscore.downcase.pluralize.dasherize
+    model.class.to_s.underscore.downcase.pluralize.tr('_', '-')
   end
 end

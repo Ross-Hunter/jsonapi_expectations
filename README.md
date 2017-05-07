@@ -1,8 +1,6 @@
-# JsonapiExpectations
+# Jsonapi Expectations
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/jsonapi_expectations`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+This gem is for testing a [JSON API](http://jsonapi.org/) using the [Airborne Gem](https://github.com/brooklynDev/airborne). 
 
 ## Installation
 
@@ -22,7 +20,17 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+`expect_attributes`
+
+`expect_attributes_in_list`
+
+`expect_relationship`
+
+`expect_item_count`
+
+`expect_item_in_list`
+
+`expect_item_to_not_be_in_list`
 
 ## Development
 
