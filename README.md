@@ -1,6 +1,6 @@
 # Jsonapi Expectations
 
-Semantic expectation helpers for [JSON API](http://jsonapi.org/) testing using [Airborne](https://github.com/brooklynDev/airborne) and [RSpec](http://rspec.info/). It makes writing request specs fun, easy, and legible.
+Semantic expectation helpers for [JSON API](http://jsonapi.org/) testing using [Airborne](https://github.com/brooklynDev/airborne) and [RSpec](http://rspec.info/). It makes writing request specs fun, easy, and legible. It essentially just digs into the jsonapi response for you, so you don't need to think so much about `data`, `attributes`, `relationships`, or `includes`
 
 ## Usage
 
@@ -28,21 +28,43 @@ expect_item_in_list model, type: 'people' # can set jsonapi type
 expect_item_to_not_be_in_list hidden_model # infer type from model class
 ```
 
+
+Using these helpers a spec might look something like this
+
+```ruby
+describe 'widgets' do
+  let(:organization) { FactoryGirl.create :organization }
+  let(:widget_attributes) { { name: 'foo' } }
+  let(:widget_relations) { { 'organization' => { data: { id:  organization.id } } }
+
+  example 'creating a widget' do
+    post widgets_path, params: { data: { attributes: widget_attributes,
+                                         relationships: widget_relations } }
+    expect_status :ok
+    expect_attributes name: widget_attributes[:name]
+    expect_relationship key: 'organization',
+                        link: organization_path(organization.id)
+  end
+end
+```
+
 ## Installation
 
-Add this line to your application's Gemfile:
+Add this line to your application's Gemfile in your test group:
 
 ```ruby
 gem 'jsonapi_expectations'
 ```
 
-And then execute:
+And include it in `spec_helper.rb`
 
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install jsonapi_expectations
+```ruby
+RSpec.configure do |config|
+  # ...
+  config.include JsonapiExpectations, type: :request
+  # ...
+end
+```
 
 ## Development
 
