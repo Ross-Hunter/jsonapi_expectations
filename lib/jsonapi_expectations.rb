@@ -1,4 +1,3 @@
-require "jsonapi_expectations/version"
 require 'airborne'
 
 module JsonapiExpectations
