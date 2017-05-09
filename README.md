@@ -1,6 +1,32 @@
 # Jsonapi Expectations
 
-This gem is for testing a [JSON API](http://jsonapi.org/) using the [Airborne Gem](https://github.com/brooklynDev/airborne). 
+Semantic expectation helpers for [JSON API](http://jsonapi.org/) testing using [Airborne](https://github.com/brooklynDev/airborne) and [RSpec](http://rspec.info/). It makes writing request specs fun, easy, and legible.
+
+## Usage
+
+The gem includes the following matchers, which all aim to be self-explanatory
+
+``` ruby
+expect_attributes title: 'JSON API paints my bikeshed!'
+
+expect_attributes_in_list can_find: 'attributes',  # keys are translated
+                          anywhere_in_a: 'list'    # to underscored symbols
+
+expect_relationship key: 'group',  # the name of the key under `relationships`
+                    type: 'sites', # (optional) defaults to plural of key
+                    id: site.id,   # find by id and/or link (at least one)
+                    link: "http://www.example.com/sites/#{site.id}" 
+                    included: true # look for item in `included`
+
+expect_relationship_in_list key: 'group', # can be very succint
+                            id: group.id
+
+expect_item_count 4 # the number of items underneath the `data` key
+
+expect_item_in_list model, type: 'people' # can set jsonapi type
+
+expect_item_to_not_be_in_list hidden_model # infer type from model class
+```
 
 ## Installation
 
@@ -18,32 +44,17 @@ Or install it yourself as:
 
     $ gem install jsonapi_expectations
 
-## Usage
-
-`expect_attributes`
-
-`expect_attributes_in_list`
-
-`expect_relationship`
-
-`expect_relationship_in_list`
-
-`expect_item_count`
-
-`expect_item_in_list`
-
-`expect_item_to_not_be_in_list`
-
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+TODO:
+- Better error/failure messages, right now they fall through to Airborne
+- Flesh out test cases as examples - I have written about 200 tests using these, I know they work 😀
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/jsonapi_expectations. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/Ross-Hunter/jsonapi_expectations. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
+This Gem has been lovingly hand-crafted by [Ross-Hunter](http://ross-hunter.com), and built on top of the super-sweet [Airborne Gem](https://github.com/brooklynDev/airborne).
 
 ## License
 

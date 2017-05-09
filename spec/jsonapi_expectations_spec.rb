@@ -55,7 +55,7 @@ RSpec.describe JsonapiExpectations do
 
   describe 'expect_item_in_list' do
     xexample 'finds it by type and id' do
-      # TODO: properly load activesupport in the library create a mock here
+      # TODO: properly load activesupport in the library and create a mock here
       record = OpenStruct.new id: 1
       expect_item_in_list record, type: 'people'
     end

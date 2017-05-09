@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Ross-Hunter"]
   spec.email         = ["ross-hunter@ross-hunter.com"]
 
-  spec.summary       = %q{Expectation helpers for testing your jsonapi compliant api}
+  spec.summary       = %q{Semantic expectation helpers for JSON API testing using Airborne and RSpec.}
   spec.homepage      = "https://github.com/Ross-Hunter/jsonapi_expectations"
   spec.license       = "MIT"
 
