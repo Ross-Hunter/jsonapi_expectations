@@ -1,6 +1,7 @@
 require "bundler/setup"
 require "jsonapi_expectations"
-require 'pry'
+require "pry"
+require_relative "./support/mock_classes"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

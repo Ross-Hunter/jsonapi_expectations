@@ -1,4 +1,5 @@
 require 'airborne'
+require 'active_support/inflector'
 
 module JsonapiExpectations
   def expect_attributes attrs
@@ -59,13 +60,17 @@ module JsonapiExpectations
     expect(found).to be_truthy
   end
 
-  def expect_item_to_not_be_in_list dont_find_me, opts = {}
+  def expect_item_not_in_list dont_find_me, opts = {}
     opts[:type] ||= jsonapi_type dont_find_me
     expect(json_body[:data]).to_not be_empty
     json_body[:data].each do |item|
       expect(jsonapi_match?(dont_find_me, item, opts[:type])).to be_falsey
     end
   end
+  alias_method :expect_item_not_to_be_in_list,
+               :expect_item_not_in_list
+  alias_method :expect_item_to_not_be_in_list,
+               :expect_item_not_in_list
 
   ## Finder helpers
 
