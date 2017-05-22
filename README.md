@@ -25,7 +25,7 @@ expect_item_count 4 # the number of items underneath the `data` key
 
 expect_item_in_list model, type: 'people' # can set jsonapi type
 
-expect_item_to_not_be_in_list hidden_model # infer type from model class
+expect_item_not_in_list hidden_model # infer type from model class
 ```
 
 

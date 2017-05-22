@@ -2,10 +2,9 @@ require 'spec_helper'
 require 'json'
 
 RSpec.describe JsonapiExpectations do
-  let(:json_body) do
-    JSON.parse(IO.read("spec/test_responses/jsonapi.json"),
-               symbolize_names: true)
-  end
+  # Don't load from yaml everytime, will want to clean this up
+  # TODO: don't use a global, you hack
+  let(:json_body) { JSON_BODY }
 
   example "has a version number" do
     expect(JsonapiExpectations::VERSION).not_to be nil
@@ -54,14 +53,22 @@ RSpec.describe JsonapiExpectations do
   end
 
   describe 'expect_item_in_list' do
-    xexample 'finds it by type and id' do
-      # TODO: properly load activesupport in the library and create a mock here
-      record = OpenStruct.new id: 1
-      expect_item_in_list record, type: 'people'
+    let(:record) { Article.new id: 1 }
+
+    example 'finds it by type and id' do
+      expect_item_in_list record
+    end
+
+    example 'can explicitly set type' do
+      expect_item_in_list record, type: 'articles'
     end
   end
 
-  describe 'expect_item_to_not_be_in_list' do
+  describe 'expect_item_not_in_list' do
+    let(:record) { Article.new id: 99999 }
 
+    example 'searches by type, id, and link' do
+      expect_item_not_in_list record
+    end
   end
 end
