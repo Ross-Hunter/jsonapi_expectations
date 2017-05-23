@@ -1,5 +1,7 @@
 # Jsonapi Expectations
 
+[![CircleCI](https://circleci.com/gh/Ross-Hunter/jsonapi_expectations/tree/master.svg?style=svg)](https://circleci.com/gh/Ross-Hunter/jsonapi_expectations/tree/master)
+
 Semantic expectation helpers for [JSON API](http://jsonapi.org/) testing using [Airborne](https://github.com/brooklynDev/airborne) and [RSpec](http://rspec.info/). It makes writing request specs fun, easy, and legible. It essentially just digs into the jsonapi response for you, so you don't need to think so much about `data`, `attributes`, `relationships`, or `includes`
 
 ## Usage

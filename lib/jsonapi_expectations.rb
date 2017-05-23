@@ -77,7 +77,7 @@ module JsonapiExpectations
   def find_record_in_response record, opts = {}
     opts[:type] ||= jsonapi_type(record)
     json_body[:data].select do |item|
-      item[:id]&.to_s == record.id&.to_s && item[:type] == opts[:type]
+      item[:id] == record.id && item[:type] == opts[:type]
     end.first
   end
 
