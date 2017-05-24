@@ -7,6 +7,13 @@ module JsonapiExpectations
     expect_json 'data.attributes', dasherize_keys(attrs)
   end
 
+  def expect_attributes_absent *keys
+    expect(json_body[:data]).to_not be_empty
+    dasherize_array(keys).each do |key|
+      expect(json_body[:data][:attributes][key].present?).to be_falsey
+    end
+  end
+
   def expect_attributes_in_list attrs
     expect(json_body[:data]).to_not be_empty
     expect_json 'data.?.attributes', dasherize_keys(attrs)
@@ -93,8 +100,16 @@ module JsonapiExpectations
     expect_json "included.?", relationship_data if included
   end
 
+  def dasherize_array array
+    array.map { |item| dasherize item }
+  end
+
   def dasherize_keys hash
-    hash.deep_transform_keys { |key| key.to_s.tr('_', '-').to_sym }
+    hash.deep_transform_keys { |key| dasherize key }
+  end
+
+  def dasherize thing
+    thing.to_s.tr('_', '-').to_sym
   end
 
   def jsonapi_match? model, data, type
