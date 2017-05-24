@@ -3,35 +3,35 @@ require 'active_support/inflector'
 
 module JsonapiExpectations
   def expect_attributes attrs
-    expect(json_body[:data]).to_not be_empty
-    expect_json 'data.attributes', dasherize_keys(attrs)
+    expect_valid_data
+    if is_array_response?
+      location = 'data.?.attributes'
+    else
+      location = 'data.attributes'
+    end
+    expect_json location, dasherize_keys(attrs)
   end
+  alias_method :expect_attributes_in_list, :expect_attributes
 
   def expect_attributes_absent *keys
-    expect(json_body[:data]).to_not be_empty
-    dasherize_array(keys).each do |key|
-      expect(json_body[:data][:attributes][key].present?).to be_falsey
-    end
-  end
-
-  def expect_attributes_in_list attrs
-    expect(json_body[:data]).to_not be_empty
-    expect_json 'data.?.attributes', dasherize_keys(attrs)
-  end
-
-  def expect_attributes_absent_in_list *keys
-    expect(json_body[:data]).to_not be_empty
-    dasherize_array(keys).each do |key|
+    expect_valid_data
+    if is_array_response?
       json_body[:data].each do |data|
-        expect(data[key].present?).to be_falsey
+        dasherize_array(keys).each do |key|
+          expect(data[key].present?).to be_falsey
+        end
+      end
+    else
+      dasherize_array(keys).each do |key|
+        expect(json_body[:data][:attributes][key].present?).to be_falsey
       end
     end
   end
+  alias_method :expect_attributes_absent_in_list, :expect_attributes_absent
 
   def expect_relationship opts
-    # TODO: determine if response is an array to set this, rather than passing in an option
-    # If looking for item in a list, need to change location string
-    location = if opts[:in_list]
+    expect_valid_data
+    location = if is_array_response?
                  "data.?.relationships.#{opts[:key]}"
                else
                  "data.relationships.#{opts[:key]}"
@@ -58,17 +58,15 @@ module JsonapiExpectations
       end
     end
   end
-
-  def expect_relationship_in_list opts
-    opts[:in_list] = true
-    expect_relationship opts
-  end
+  alias_method :expect_relationship_in_list, :expect_relationship
 
   def expect_item_count number
+    expect_valid_data
     expect_json_sizes data: number
   end
 
   def expect_record find_me, opts = {}
+    expect_valid_data
     opts[:type] ||= jsonapi_type find_me
     if opts[:included]
       location = json_body[:included]
@@ -84,6 +82,7 @@ module JsonapiExpectations
   alias_method :expect_item_in_list, :expect_record
 
   def expect_record_absent dont_find_me, opts = {}
+    expect_valid_data
     opts[:type] ||= jsonapi_type dont_find_me
     if opts[:included]
       location = json_body[:included]
@@ -99,9 +98,8 @@ module JsonapiExpectations
   alias_method :expect_item_not_to_be_in_list, :expect_record_absent
   alias_method :expect_item_to_not_be_in_list, :expect_record_absent
 
-  ## Finder helpers
-
   def find_record record, opts = {}
+    expect_valid_data
     opts[:type] ||= jsonapi_type(record)
     if opts[:included]
       location = json_body[:included]
@@ -114,7 +112,15 @@ module JsonapiExpectations
     end.first
   end
 
+  def expect_valid_data
+    expect(json_body[:data]).to_not be_empty
+  end
+
   private
+
+  def is_array_response?
+    json_body[:data].is_a? Array
+  end
 
   def expect_linkage_data location, relationship_data, included
     begin

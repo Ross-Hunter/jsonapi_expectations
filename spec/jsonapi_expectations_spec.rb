@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'json'
 
 RSpec.describe JsonapiExpectations do
-  # Don't load from yaml everytime, will want to clean this up
+  # Don't load from yaml everytime
   # TODO: don't use a global, you hack
   let(:json_body) { JSON_BODY }
 
@@ -19,7 +19,7 @@ RSpec.describe JsonapiExpectations do
       # TODO: raise and test our own errors
       example "raises error if not found" do
         expect{
-          expect_attributes_in_list(title: 'foo')
+          expect_attributes_in_list title: 'foo'
         }.to raise_error
       end
     end
@@ -118,12 +118,13 @@ RSpec.describe JsonapiExpectations do
       example 'finds it by type and id' do
         found = find_record record
         expect(found).to be
+        expect(found[:attributes][:title]).to eq("JSON API paints my bikeshed!")
       end
 
       example 'can find included objects' do
-        found = find_record included, type: 'people',
-                                                  included: true
+        found = find_record included, type: 'people', included: true
         expect(found).to be
+        expect(found[:attributes][:"first-name"]).to eq("Dan")
       end
     end
 

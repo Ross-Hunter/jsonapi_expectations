@@ -9,10 +9,12 @@ Semantic expectation helpers for [JSON API](http://jsonapi.org/) testing using [
 The gem includes the following matchers, which all aim to be self-explanatory
 
 ``` ruby
-expect_attributes title: 'JSON API paints my bikeshed!'
+expect_attributes title: 'JSON API paints my bikeshed!',
+                  can_find: 'attributes',     # keys are translated to
+                  anywhere_under: 'data key', # underscored symbols
+                  works_on_array_response: 'or just a single object' 
 
-expect_attributes_in_list can_find: 'attributes',  # keys are translated
-                          anywhere_in_a: 'list'    # to underscored symbols
+expect_attributes_absent cost: 'allows testing field-level permissions'
 
 expect_relationship key: 'group',  # the name of the key under `relationships`
                     type: 'sites', # (optional) defaults to plural of key
@@ -20,14 +22,13 @@ expect_relationship key: 'group',  # the name of the key under `relationships`
                     link: "http://www.example.com/sites/#{site.id}" 
                     included: true # look for item in `included`
 
-expect_relationship_in_list key: 'group', # can be very succint
-                            id: group.id
+expect_record model, type: 'people' # can set jsonapi type
+
+expect_record_absent hidden_model # infer type from model class
+
+find_record model # grab the record for more in-depth testing of the response
 
 expect_item_count 4 # the number of items underneath the `data` key
-
-expect_item_in_list model, type: 'people' # can set jsonapi type
-
-expect_item_not_in_list hidden_model # infer type from model class
 ```
 
 
@@ -36,16 +37,28 @@ Using these helpers a spec might look something like this
 ```ruby
 describe 'widgets' do
   let(:organization) { FactoryGirl.create :organization }
+  let(:widget) { FactoryGirl.create :widget, organization: organization }
   let(:widget_attributes) { { name: 'foo' } }
   let(:widget_relations) { { 'organization' => { data: { id:  organization.id } } }
 
   example 'creating a widget' do
     post widgets_path, params: { data: { attributes: widget_attributes,
                                          relationships: widget_relations } }
-    expect_status :ok
+    expect_status :created
     expect_attributes name: widget_attributes[:name]
     expect_relationship key: 'organization',
                         link: organization_path(organization.id)
+  end
+
+  example 'getting widgets with included organization' do
+    get widgets_path, params: { include: 'organization' }
+
+    expect_status :ok
+    expect_record widget
+    expect_record organization, included: true
+    found_widget = find_record widget
+    found_organization = find_record organization, included: true
+    expect(found_widget.organization).to eq(found_organization)
   end
 end
 ```
@@ -70,9 +83,6 @@ end
 
 ## Development
 
-TODO:
-- Better error/failure messages, right now they fall through to Airborne
-- Flesh out test cases as examples - I have written about 200 tests using these, I know they work 😀
 
 ## Contributing
 
