@@ -19,7 +19,17 @@ module JsonapiExpectations
     expect_json 'data.?.attributes', dasherize_keys(attrs)
   end
 
+  def expect_attributes_absent_in_list *keys
+    expect(json_body[:data]).to_not be_empty
+    dasherize_array(keys).each do |key|
+      json_body[:data].each do |data|
+        expect(data[key].present?).to be_falsey
+      end
+    end
+  end
+
   def expect_relationship opts
+    # TODO: determine if response is an array to set this, rather than passing in an option
     # If looking for item in a list, need to change location string
     location = if opts[:in_list]
                  "data.?.relationships.#{opts[:key]}"
@@ -58,33 +68,49 @@ module JsonapiExpectations
     expect_json_sizes data: number
   end
 
-  def expect_item_in_list find_me, opts = {}
+  def expect_record find_me, opts = {}
     opts[:type] ||= jsonapi_type find_me
-    expect(json_body[:data]).to_not be_empty
-    found = json_body[:data].detect do |item|
+    if opts[:included]
+      location = json_body[:included]
+    else
+      location = json_body[:data]
+    end
+    expect(location).to_not be_empty
+    found = location.detect do |item|
       jsonapi_match? find_me, item, opts[:type]
     end
     expect(found).to be_truthy
   end
+  alias_method :expect_item_in_list, :expect_record
 
-  def expect_item_not_in_list dont_find_me, opts = {}
+  def expect_record_absent dont_find_me, opts = {}
     opts[:type] ||= jsonapi_type dont_find_me
-    expect(json_body[:data]).to_not be_empty
-    json_body[:data].each do |item|
+    if opts[:included]
+      location = json_body[:included]
+    else
+      location = json_body[:data]
+    end
+    expect(location).to_not be_empty
+    location.each do |item|
       expect(jsonapi_match?(dont_find_me, item, opts[:type])).to be_falsey
     end
   end
-  alias_method :expect_item_not_to_be_in_list,
-               :expect_item_not_in_list
-  alias_method :expect_item_to_not_be_in_list,
-               :expect_item_not_in_list
+  alias_method :expect_item_not_in_list, :expect_record_absent
+  alias_method :expect_item_not_to_be_in_list, :expect_record_absent
+  alias_method :expect_item_to_not_be_in_list, :expect_record_absent
 
   ## Finder helpers
 
-  def find_record_in_response record, opts = {}
+  def find_record record, opts = {}
     opts[:type] ||= jsonapi_type(record)
-    json_body[:data].select do |item|
-      item[:id] == record.id.to_s && item[:type] == opts[:type]
+    if opts[:included]
+      location = json_body[:included]
+    else
+      location = json_body[:data]
+    end
+    expect(location).to_not be_empty
+    location.select do |item|
+      jsonapi_match? record, item, opts[:type]
     end.first
   end
 
