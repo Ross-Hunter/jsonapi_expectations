@@ -13,13 +13,13 @@ RSpec.describe JsonapiExpectations do
   describe 'expect_attributes' do
     context 'in list' do
       example "can find attributes" do
-        expect_attributes_in_list title: 'JSON API paints my bikeshed!'
+        expect_attributes title: 'JSON API paints my bikeshed!'
       end
 
       # TODO: raise and test our own errors
       example "raises error if not found" do
         expect{
-          expect_attributes_in_list title: 'foo'
+          expect_attributes title: 'foo'
         }.to raise_error
       end
     end
@@ -28,22 +28,27 @@ RSpec.describe JsonapiExpectations do
   describe 'expect_relationship' do
     context 'in list' do
       example 'find by links' do
-        expect_relationship_in_list key: 'author',
-                                    link: "http://example.com/articles/1/author"
+        expect_relationship key: 'author',
+                            link: "http://example.com/articles/1/author"
       end
 
       example 'find by data' do
-        expect_relationship_in_list key: 'author',
-                                    id: '9',
-                                    type: 'people'
-
+        expect_relationship key: 'author',
+                            id: '9',
+                            type: 'people'
       end
 
       example 'find included items' do
-        expect_relationship_in_list key: 'author',
-                                    id: '9',
-                                    type: 'people',
-                                    included: true
+        expect_relationship key: 'author',
+                            id: '9',
+                            type: 'people',
+                            included: true
+      end
+
+      example 'pass in array' do
+        expect_relationship key: 'comments',
+                            id: ['12', '5'],
+                            included: true
       end
     end
   end
