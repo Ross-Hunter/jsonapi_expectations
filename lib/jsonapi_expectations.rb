@@ -66,14 +66,13 @@ module JsonapiExpectations
   end
 
   def expect_record find_me, opts = {}
-    expect_valid_data
     opts[:type] ||= jsonapi_type find_me
     if opts[:included]
       location = json_body[:included]
     else
       location = json_body[:data]
     end
-    expect(location).to_not be_empty
+    expect_valid_data location
     found = location.detect do |item|
       jsonapi_match? find_me, item, opts[:type]
     end
@@ -82,14 +81,13 @@ module JsonapiExpectations
   alias_method :expect_item_in_list, :expect_record
 
   def expect_record_absent dont_find_me, opts = {}
-    expect_valid_data
     opts[:type] ||= jsonapi_type dont_find_me
     if opts[:included]
       location = json_body[:included]
     else
       location = json_body[:data]
     end
-    expect(location).to_not be_empty
+    expect_valid_data location
     location.each do |item|
       expect(jsonapi_match?(dont_find_me, item, opts[:type])).to be_falsey
     end
@@ -99,21 +97,22 @@ module JsonapiExpectations
   alias_method :expect_item_to_not_be_in_list, :expect_record_absent
 
   def find_record record, opts = {}
-    expect_valid_data
     opts[:type] ||= jsonapi_type(record)
     if opts[:included]
       location = json_body[:included]
     else
       location = json_body[:data]
     end
-    expect(location).to_not be_empty
+    expect_valid_data location
     location.select do |item|
       jsonapi_match? record, item, opts[:type]
     end.first
   end
 
-  def expect_valid_data
-    expect(json_body[:data]).to_not be_empty
+  def expect_valid_data location = nil
+    location ||= json_body[:data]
+    expect(location).to_not be_nil
+    expect(location).to_not be_empty
   end
 
   private
