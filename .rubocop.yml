@@ -1,0 +1,59 @@
+AllCops:
+  Include:
+    - Rakefile
+    - config.ru
+  Exclude:
+    - 'tmp/**/*'
+    - 'vendor/**/*'
+    - 'bin/**/*'
+
+Style/SymbolProc:
+  IgnoredMethods:
+    - detect
+Style/InlineComment:
+  Enabled: false
+Style/Documentation:
+  Enabled: false
+Style/OneLineConditional:
+  Enabled: false
+Style/Lambda:
+  Enabled: false
+Style/NumericLiterals:
+  Enabled: false
+Style/MethodDefParentheses:
+  EnforcedStyle: require_no_parentheses
+Style/AndOr:
+  EnforcedStyle: conditionals
+Style/CollectionMethods:
+  Enabled: true
+  PreferredMethods:
+    collect: map
+    collect!: map!
+    find: detect
+    find_all: select
+    inject: reduce
+Style/CommentAnnotation:
+  Keywords:
+    - TODO
+    - FIXME
+    - OPTIMIZE
+    - HACK
+    - REVIEW
+    - NOTE
+Style/DotPosition:
+  Enabled: true
+  EnforcedStyle: leading
+Style/FileName:
+  Enabled: false
+Style/FrozenStringLiteralComment:
+  Enabled: false
+Style/StringLiterals:
+  Enabled: true
+  EnforcedStyle: single_quotes
+Style/WordArray:
+  Enabled: false
+Style/SymbolArray:
+  Enabled: false
+
+Security/YAMLLoad:
+  Enabled: false
