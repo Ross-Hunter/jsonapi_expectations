@@ -1,5 +1,6 @@
 require 'airborne'
 require 'active_support/inflector'
+require_relative './jsonapi_expectations/exceptions'
 
 module JsonapiExpectations
   def expect_attributes attrs
@@ -10,6 +11,10 @@ module JsonapiExpectations
       location = 'data.attributes'
     end
     expect_json location, dasherize_keys(attrs)
+
+  rescue RSpec::Expectations::ExpectationNotMetError => e
+    message = "Attributes #{attrs} not present in json response"
+    raise JsonapiExpectations::Exceptions::ExpectationError, message
   end
   alias_method :expect_attributes_in_list, :expect_attributes
 

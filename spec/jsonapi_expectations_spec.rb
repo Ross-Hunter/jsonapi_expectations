@@ -2,31 +2,83 @@ require 'spec_helper'
 require 'json'
 
 RSpec.describe JsonapiExpectations do
-  # Don't load from yaml everytime
-  # TODO: don't use a global, you hack
-  let(:json_body) { JSON_BODY }
+  let(:json_body) { JSON_BODY_ARRAY }
 
   example "has a version number" do
     expect(JsonapiExpectations::VERSION).not_to be nil
   end
 
   describe 'expect_attributes' do
-    context 'in list' do
-      example "can find attributes" do
-        expect_attributes title: 'JSON API paints my bikeshed!'
+    context 'array response' do
+      context 'when present' do
+        example "can find attributes" do
+          expect_attributes title: 'JSON API paints my bikeshed!',
+                            published: '1'
+          expect_attributes title: "It's Party Time!",
+                            published: '1'
+        end
       end
 
-      # TODO: raise and test our own errors
-      example "raises error if not found" do
-        expect{
-          expect_attributes title: 'foo'
-        }.to raise_error
+      context 'when absent' do
+        example "raises error if not found" do
+          expect{
+            expect_attributes title: 'foo'
+          }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+        end
+
+        example "raises error on partial match" do
+          expect{
+            expect_attributes title: 'foo',
+                              published: '1'
+          }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+        end
+
+        xexample 'error contains attributes' do
+          # how to check exception message
+        end
+      end
+    end
+
+    context 'single item response' do
+      let(:json_body) { JSON_BODY_SINGLE }
+
+      context 'when present' do
+        example "can find attributes" do
+          expect_attributes title: 'JSON API paints my bikeshed!'
+        end
+      end
+
+      context 'when absent' do
+        example "raises error if not found" do
+          expect{
+            expect_attributes title: 'foo'
+          }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+        end
+      end
+    end
+  end
+
+  describe 'expect_attributes_absent' do
+    context 'array response' do
+      context 'when present' do
+
+      end
+      context 'when absent' do
+
+      end
+    end
+    context 'single item response' do
+      context 'when present' do
+
+      end
+      context 'when absent' do
+
       end
     end
   end
 
   describe 'expect_relationship' do
-    context 'in list' do
+    context 'array response' do
       example 'find by links' do
         expect_relationship key: 'author',
                             link: "http://example.com/articles/1/author"
@@ -50,12 +102,18 @@ RSpec.describe JsonapiExpectations do
                             id: ['12', '5'],
                             included: true
       end
+
+      example 'raises error if not found' do
+        expect{
+          expect_relationship key: 'widgets', id: '24'
+        }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+      end
     end
   end
 
   describe 'expect_item_count' do
     example 'counts the elements inside data' do
-      expect_item_count 1
+      expect_item_count 2
     end
   end
 
