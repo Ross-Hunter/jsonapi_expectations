@@ -4,14 +4,14 @@ require 'json'
 RSpec.describe JsonapiExpectations do
   let(:json_body) { JSON_BODY_ARRAY }
 
-  example "has a version number" do
+  example 'has a version number' do
     expect(JsonapiExpectations::VERSION).not_to be nil
   end
 
   describe 'expect_attributes' do
     context 'array response' do
       context 'when present' do
-        example "can find attributes" do
+        example 'can find attributes' do
           expect_attributes title: 'JSON API paints my bikeshed!',
                             published: '1'
           expect_attributes title: "It's Party Time!",
@@ -20,13 +20,13 @@ RSpec.describe JsonapiExpectations do
       end
 
       context 'when absent' do
-        example "raises error if not found" do
+        example 'raises error if not found' do
           expect{
             expect_attributes title: 'foo'
           }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
         end
 
-        example "raises error on partial match" do
+        example 'raises error on partial match' do
           expect{
             expect_attributes title: 'foo',
                               published: '1'
@@ -39,13 +39,13 @@ RSpec.describe JsonapiExpectations do
       let(:json_body) { JSON_BODY_SINGLE }
 
       context 'when present' do
-        example "can find attributes" do
+        example 'can find attributes' do
           expect_attributes title: 'JSON API paints my bikeshed!'
         end
       end
 
       context 'when absent' do
-        example "raises error if not found" do
+        example 'raises error if not found' do
           expect{
             expect_attributes title: 'foo'
           }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
@@ -57,7 +57,7 @@ RSpec.describe JsonapiExpectations do
   describe 'expect_attributes_absent' do
     context 'array response' do
       context 'when present' do
-        example "raises error if found" do
+        example 'raises error if found' do
           expect{
             expect_attributes_absent :title
           }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
@@ -73,7 +73,7 @@ RSpec.describe JsonapiExpectations do
       let(:json_body) { JSON_BODY_SINGLE }
 
       context 'when present' do
-        example "raises error if found" do
+        example 'raises error if found' do
           expect{
             expect_attributes_absent :title
           }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
@@ -91,7 +91,7 @@ RSpec.describe JsonapiExpectations do
     context 'array response' do
       example 'find by links' do
         expect_relationship key: 'author',
-                            link: "http://example.com/articles/1/author"
+                            link: 'http://example.com/articles/1/author'
       end
 
       example 'find by data' do
@@ -196,13 +196,13 @@ RSpec.describe JsonapiExpectations do
       example 'finds it by type and id' do
         found = find_record record
         expect(found).to be
-        expect(found[:attributes][:title]).to eq("JSON API paints my bikeshed!")
+        expect(found[:attributes][:title]).to eq('JSON API paints my bikeshed!')
       end
 
       example 'can find included objects' do
         found = find_record included, type: 'people', included: true
         expect(found).to be
-        expect(found[:attributes][:"first-name"]).to eq("Dan")
+        expect(found[:attributes][:"first-name"]).to eq('Dan')
       end
     end
 
