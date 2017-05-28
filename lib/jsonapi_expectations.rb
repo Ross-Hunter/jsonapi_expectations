@@ -12,10 +12,9 @@ module JsonapiExpectations
                end
     expect_json location, dasherize_keys(attrs)
   rescue RSpec::Expectations::ExpectationNotMetError => e
-    message = "Expected attributes #{attrs} to be present in json response"
-    raise JsonapiExpectations::Exceptions::ExpectationError, message
+    msg = "Expected attributes #{attrs} to be present in json response"
+    raise JsonapiExpectations::Exceptions::ExpectationError, msg
   end
-  alias expect_attributes_in_list expect_attributes
 
   def expect_attributes_absent *keys
     expect_valid_data
@@ -31,10 +30,9 @@ module JsonapiExpectations
       end
     end
   rescue RSpec::Expectations::ExpectationNotMetError => e
-    message = "Expected #{keys} not to be present in json response"
-    raise JsonapiExpectations::Exceptions::ExpectationError, message
+    msg = "Expected #{keys} not to be present in json response"
+    raise JsonapiExpectations::Exceptions::ExpectationError, msg
   end
-  alias expect_attributes_absent_in_list expect_attributes_absent
 
   def expect_relationship opts
     expect_valid_data
@@ -56,7 +54,7 @@ module JsonapiExpectations
     if opts[:id]
       location = "#{location}.data"
 
-      if opts[:id].respond_to? :each # if an array was passed in, look for each of them
+      if opts[:id].is_a? Array # if array was passed in, check each
         opts[:id].each do |id|
           expect_linkage_data "#{location}.?", { type: type, id: id }, opts[:included]
         end
@@ -65,10 +63,9 @@ module JsonapiExpectations
       end
     end
   rescue RSpec::Expectations::ExpectationNotMetError => e
-    message = "Expected relationship to #{type} in response"
-    raise JsonapiExpectations::Exceptions::ExpectationError, message
+    msg = "Expected relationship to #{type} in response"
+    raise JsonapiExpectations::Exceptions::ExpectationError, msg
   end
-  alias expect_relationship_in_list expect_relationship
 
   def expect_item_count number
     expect_valid_data
@@ -88,10 +85,9 @@ module JsonapiExpectations
     end
     expect(found).to be_truthy
   rescue RSpec::Expectations::ExpectationNotMetError => e
-    message = "Expected #{find_me} to be present in json response"
-    raise JsonapiExpectations::Exceptions::ExpectationError, message
+    msg = "Expected #{find_me} to be present in json response"
+    raise JsonapiExpectations::Exceptions::ExpectationError, msg
   end
-  alias expect_item_in_list expect_record
 
   def expect_record_absent dont_find_me, opts = {}
     opts[:type] ||= jsonapi_type dont_find_me
@@ -105,20 +101,17 @@ module JsonapiExpectations
       expect(jsonapi_match?(dont_find_me, item, opts[:type])).to be_falsey
     end
   rescue RSpec::Expectations::ExpectationNotMetError => e
-    message = "Expected #{dont_find_me} to not be present in json response"
-    raise JsonapiExpectations::Exceptions::ExpectationError, message
+    msg = "Expected #{dont_find_me} to not be present in json response"
+    raise JsonapiExpectations::Exceptions::ExpectationError, msg
   end
-  alias expect_item_not_in_list expect_record_absent
-  alias expect_item_not_to_be_in_list expect_record_absent
-  alias expect_item_to_not_be_in_list expect_record_absent
 
   def expect_valid_data location = nil
     location ||= json_body[:data]
     expect(location).to_not be_nil
     expect(location).to_not be_empty
   rescue RSpec::Expectations::ExpectationNotMetError => e
-    message = "#{location} is does not contain data"
-    raise JsonapiExpectations::Exceptions::ExpectationError, message
+    msg = "#{location} is does not contain data"
+    raise JsonapiExpectations::Exceptions::ExpectationError, msg
   end
 
   def find_record record, opts = {}
@@ -133,6 +126,16 @@ module JsonapiExpectations
       jsonapi_match? record, item, opts[:type]
     end.first
   end
+
+  # This will go away in the 0.1.0 release
+  # TODO: deprecate these
+  alias expect_attributes_in_list expect_attributes
+  alias expect_attributes_absent_in_list expect_attributes_absent
+  alias expect_relationship_in_list expect_relationship
+  alias expect_item_in_list expect_record
+  alias expect_item_not_in_list expect_record_absent
+  alias expect_item_not_to_be_in_list expect_record_absent
+  alias expect_item_to_not_be_in_list expect_record_absent
 
   private
 
