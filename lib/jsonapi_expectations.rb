@@ -105,15 +105,6 @@ module JsonapiExpectations
     raise JsonapiExpectations::Exceptions::ExpectationError, msg
   end
 
-  def expect_valid_data location = nil
-    location ||= json_body[:data]
-    expect(location).to_not be_nil
-    expect(location).to_not be_empty
-  rescue RSpec::Expectations::ExpectationNotMetError => e
-    msg = "#{location} is does not contain data"
-    raise JsonapiExpectations::Exceptions::ExpectationError, msg
-  end
-
   def find_record record, opts = {}
     opts[:type] ||= jsonapi_type(record)
     location = if opts[:included]
@@ -141,6 +132,15 @@ module JsonapiExpectations
 
   def array_response?
     json_body[:data].is_a? Array
+  end
+
+  def expect_valid_data location = nil
+    location ||= json_body[:data]
+    expect(location).to_not be_nil
+    expect(location).to_not be_empty
+  rescue RSpec::Expectations::ExpectationNotMetError => e
+    msg = "#{location} is does not contain data"
+    raise JsonapiExpectations::Exceptions::ExpectationError, msg
   end
 
   def expect_linkage_data location, relationship_data, included
