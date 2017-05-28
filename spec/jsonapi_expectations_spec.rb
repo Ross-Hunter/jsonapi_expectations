@@ -8,6 +8,36 @@ RSpec.describe JsonapiExpectations do
     expect(JsonapiExpectations::VERSION).not_to be nil
   end
 
+  describe 'expect_records_sorted_by' do
+    context 'when records are sorted asc' do
+      let(:json_body) { JSON_BODY_ASC }
+
+      example 'expect sorted asc is good' do
+        expect_records_sorted_by :title, :asc
+      end
+
+      example 'expect sorted desc throws error' do
+        expect{
+          expect_records_sorted_by :title, :desc
+        }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+      end
+    end
+
+    context 'when records are sorted desc' do
+      let(:json_body) { JSON_BODY_DESC }
+
+      example 'expect sorted desc is good' do
+        expect_records_sorted_by :title, :desc
+      end
+
+      example 'expect sorted asc throws error' do
+        expect{
+          expect_records_sorted_by :title, :asc
+        }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+      end
+    end
+  end
+
   describe 'expect_attributes' do
     context 'array response' do
       context 'when present' do

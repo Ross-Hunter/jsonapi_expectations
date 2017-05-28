@@ -3,6 +3,10 @@ require 'active_support/inflector'
 require_relative './jsonapi_expectations/exceptions'
 
 module JsonapiExpectations
+  def expect_records_sorted_by attr, direction
+
+  end
+
   def expect_attributes attrs
     expect_valid_data
     location = if array_response?
