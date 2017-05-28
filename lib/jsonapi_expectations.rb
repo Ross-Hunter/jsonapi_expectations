@@ -13,7 +13,7 @@ module JsonapiExpectations
     expect_json location, dasherize_keys(attrs)
 
   rescue RSpec::Expectations::ExpectationNotMetError => e
-    message = "Attributes #{attrs} not present in json response"
+    message = "Expected attributes #{attrs} to be present in json response"
     raise JsonapiExpectations::Exceptions::ExpectationError, message
   end
   alias_method :expect_attributes_in_list, :expect_attributes
@@ -23,19 +23,24 @@ module JsonapiExpectations
     if is_array_response?
       json_body[:data].each do |data|
         dasherize_array(keys).each do |key|
-          expect(data[key].present?).to be_falsey
+          expect(data[:attributes].key? key).to be_falsey
         end
       end
     else
       dasherize_array(keys).each do |key|
-        expect(json_body[:data][:attributes][key].present?).to be_falsey
+        expect(json_body[:data][:attributes].key? key).to be_falsey
       end
     end
+
+  rescue RSpec::Expectations::ExpectationNotMetError => e
+    message = "Expected #{keys} not to be present in json response"
+    raise JsonapiExpectations::Exceptions::ExpectationError, message
   end
   alias_method :expect_attributes_absent_in_list, :expect_attributes_absent
 
   def expect_relationship opts
     expect_valid_data
+    type = opts[:type] || opts[:key].pluralize
     location = if is_array_response?
                  "data.?.relationships.#{opts[:key]}"
                else
@@ -52,7 +57,6 @@ module JsonapiExpectations
 
     if opts[:id]
       location = "#{location}.data"
-      type = opts[:type] || opts[:key].pluralize
 
       if opts[:id].respond_to? :each # if an array was passed in, look for each of them
         opts[:id].each do |id|
@@ -62,6 +66,10 @@ module JsonapiExpectations
         expect_linkage_data location, { type: type, id: opts[:id] }, opts[:included]
       end
     end
+
+  rescue RSpec::Expectations::ExpectationNotMetError => e
+    message = "Expected relationship to #{type} in response"
+    raise JsonapiExpectations::Exceptions::ExpectationError, message
   end
   alias_method :expect_relationship_in_list, :expect_relationship
 
@@ -82,6 +90,10 @@ module JsonapiExpectations
       jsonapi_match? find_me, item, opts[:type]
     end
     expect(found).to be_truthy
+
+  rescue RSpec::Expectations::ExpectationNotMetError => e
+    message = "Expected #{find_me} to be present in json response"
+    raise JsonapiExpectations::Exceptions::ExpectationError, message
   end
   alias_method :expect_item_in_list, :expect_record
 
@@ -96,10 +108,24 @@ module JsonapiExpectations
     location.each do |item|
       expect(jsonapi_match?(dont_find_me, item, opts[:type])).to be_falsey
     end
+
+  rescue RSpec::Expectations::ExpectationNotMetError => e
+    message = "Expected #{dont_find_me} to not be present in json response"
+    raise JsonapiExpectations::Exceptions::ExpectationError, message
   end
   alias_method :expect_item_not_in_list, :expect_record_absent
   alias_method :expect_item_not_to_be_in_list, :expect_record_absent
   alias_method :expect_item_to_not_be_in_list, :expect_record_absent
+
+  def expect_valid_data location = nil
+    location ||= json_body[:data]
+    expect(location).to_not be_nil
+    expect(location).to_not be_empty
+
+  rescue RSpec::Expectations::ExpectationNotMetError => e
+    message = "#{location} is does not contain data"
+    raise JsonapiExpectations::Exceptions::ExpectationError, message
+  end
 
   def find_record record, opts = {}
     opts[:type] ||= jsonapi_type(record)
@@ -112,12 +138,6 @@ module JsonapiExpectations
     location.select do |item|
       jsonapi_match? record, item, opts[:type]
     end.first
-  end
-
-  def expect_valid_data location = nil
-    location ||= json_body[:data]
-    expect(location).to_not be_nil
-    expect(location).to_not be_empty
   end
 
   private

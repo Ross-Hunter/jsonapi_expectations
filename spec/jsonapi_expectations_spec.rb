@@ -32,10 +32,6 @@ RSpec.describe JsonapiExpectations do
                               published: '1'
           }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
         end
-
-        xexample 'error contains attributes' do
-          # how to check exception message
-        end
       end
     end
 
@@ -61,18 +57,32 @@ RSpec.describe JsonapiExpectations do
   describe 'expect_attributes_absent' do
     context 'array response' do
       context 'when present' do
-
+        example "raises error if found" do
+          expect{
+            expect_attributes_absent :title
+          }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+        end
       end
       context 'when absent' do
-
+        example 'does not raise error' do
+          expect_attributes_absent :hidden_field
+        end
       end
     end
     context 'single item response' do
-      context 'when present' do
+      let(:json_body) { JSON_BODY_SINGLE }
 
+      context 'when present' do
+        example "raises error if found" do
+          expect{
+            expect_attributes_absent :title
+          }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+        end
       end
       context 'when absent' do
-
+        example 'does not raise error' do
+          expect_attributes_absent :hidden_field
+        end
       end
     end
   end
@@ -115,6 +125,12 @@ RSpec.describe JsonapiExpectations do
     example 'counts the elements inside data' do
       expect_item_count 2
     end
+
+    example 'raises an error if not correct' do
+      expect{
+        expect_item_count 9999
+      }.to raise_error RSpec::Expectations::ExpectationNotMetError
+    end
   end
 
   describe 'expect_record' do
@@ -141,13 +157,13 @@ RSpec.describe JsonapiExpectations do
       example 'finds it by type and id' do
         expect{
           expect_record record
-        }.to raise_error
+        }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
       end
 
       example 'can explicitly set type' do
         expect{
           expect_record record, type: 'articles'
-        }.to raise_error
+        }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
       end
     end
   end
@@ -167,13 +183,12 @@ RSpec.describe JsonapiExpectations do
       example 'searches by type, id, and link' do
         expect{
           expect_record_absent record
-        }.to raise_error
+        }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
       end
     end
   end
 
   describe 'find_record' do
-
     context 'when present' do
       let(:record) { Article.new id: 1 }
       let(:included) { People.new id: 9 }
