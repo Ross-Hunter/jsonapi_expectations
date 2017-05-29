@@ -3,10 +3,6 @@ require 'active_support/inflector'
 require_relative './jsonapi_expectations/exceptions'
 
 module JsonapiExpectations
-  def expect_records_sorted_by attr, direction
-
-  end
-
   def expect_attributes attrs
     expect_valid_data
     location = if array_response?
@@ -15,7 +11,7 @@ module JsonapiExpectations
                  'data.attributes'
                end
     expect_json location, dasherize_keys(attrs)
-  rescue RSpec::Expectations::ExpectationNotMetError => e
+  rescue RSpec::Expectations::ExpectationNotMetError
     msg = "Expected attributes #{attrs} to be present in json response"
     raise JsonapiExpectations::Exceptions::ExpectationError, msg
   end
@@ -33,7 +29,7 @@ module JsonapiExpectations
         expect(json_body[:data][:attributes].key?(key)).to be_falsey
       end
     end
-  rescue RSpec::Expectations::ExpectationNotMetError => e
+  rescue RSpec::Expectations::ExpectationNotMetError
     msg = "Expected #{keys} not to be present in json response"
     raise JsonapiExpectations::Exceptions::ExpectationError, msg
   end
@@ -66,7 +62,7 @@ module JsonapiExpectations
         expect_linkage_data location, { type: type, id: opts[:id] }, opts[:included]
       end
     end
-  rescue RSpec::Expectations::ExpectationNotMetError => e
+  rescue RSpec::Expectations::ExpectationNotMetError
     msg = "Expected relationship to #{type} in response"
     raise JsonapiExpectations::Exceptions::ExpectationError, msg
   end
@@ -88,7 +84,7 @@ module JsonapiExpectations
       jsonapi_match? find_me, item, opts[:type]
     end
     expect(found).to be_truthy
-  rescue RSpec::Expectations::ExpectationNotMetError => e
+  rescue RSpec::Expectations::ExpectationNotMetError
     msg = "Expected #{find_me} to be present in json response"
     raise JsonapiExpectations::Exceptions::ExpectationError, msg
   end
@@ -104,8 +100,28 @@ module JsonapiExpectations
     location.each do |item|
       expect(jsonapi_match?(dont_find_me, item, opts[:type])).to be_falsey
     end
-  rescue RSpec::Expectations::ExpectationNotMetError => e
+  rescue RSpec::Expectations::ExpectationNotMetError
     msg = "Expected #{dont_find_me} to not be present in json response"
+    raise JsonapiExpectations::Exceptions::ExpectationError, msg
+  end
+
+  def expect_records_sorted_by attr, direction = :asc
+    json_body[:data].each_with_index do |item, index|
+      this_one = item.dig :attributes, attr
+      next_one = json_body.dig :data, index + 1, :attributes, attr
+
+      return unless this_one && next_one
+
+      if direction == :asc
+        expect(this_one).to be <= next_one
+      elsif direction == :desc
+        expect(next_one).to be <= this_one
+      else
+        raise "2nd argument needs to be :asc or :desc"
+      end
+    end
+  rescue RSpec::Expectations::ExpectationNotMetError
+    msg = "Expected response to be sorted by #{attr} #{direction}"
     raise JsonapiExpectations::Exceptions::ExpectationError, msg
   end
 
@@ -142,7 +158,7 @@ module JsonapiExpectations
     location ||= json_body[:data]
     expect(location).to_not be_nil
     expect(location).to_not be_empty
-  rescue RSpec::Expectations::ExpectationNotMetError => e
+  rescue RSpec::Expectations::ExpectationNotMetError
     msg = "#{location} is does not contain data"
     raise JsonapiExpectations::Exceptions::ExpectationError, msg
   end
