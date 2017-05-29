@@ -2,7 +2,7 @@
 
 [![CircleCI](https://circleci.com/gh/Ross-Hunter/jsonapi_expectations/tree/master.svg?style=svg)](https://circleci.com/gh/Ross-Hunter/jsonapi_expectations/tree/master)
 
-Semantic expectation helpers for [JSON API](http://jsonapi.org/) testing using [Airborne](https://github.com/brooklynDev/airborne) and [RSpec](http://rspec.info/). It makes writing request specs fun, easy, and legible. It essentially just digs into the jsonapi response for you, so you don't need to think so much about `data`, `attributes`, `relationships`, or `includes`
+Semantic expectation helpers for [JSON API](http://jsonapi.org/) testing using [Airborne](https://github.com/brooklynDev/airborne) and [RSpec](http://rspec.info/). It makes writing request specs fun, easy, and legible. It essentially just digs into the jsonapi response for you, so you don't need to worry so much about `data`, `attributes`, `relationships`, or `includes`
 
 ## Usage
 
@@ -42,7 +42,7 @@ describe 'widgets' do
   let(:widgets) { FactoryGirl.create_list :widget, 4, organization: org }
   let(:widget) { widgets.first }
   let(:widget_attributes) { { name: 'foo' } }
-  let(:widget_relations) { { 'organization' => { data: { id:  org.id } } }
+  let(:widget_relations) { { organization: { data: { id: org.id } } }
 
   example 'creating a widget' do
     post widgets_path, params: { data: { attributes: widget_attributes,
@@ -63,8 +63,8 @@ describe 'widgets' do
     expect_records_sorted_by :price
 
     found_widget = find_record widget
-    found_organization = find_record org, included: true
-    expect(found_widget.organization).to eq(found_organization)
+    found_org = find_record org, included: true
+    expect(found_widget.organization).to eq(found_org)
   end
 end
 ```
