@@ -107,10 +107,10 @@ module JsonapiExpectations
 
   def expect_records_sorted_by attr, direction = :asc
     json_body[:data].each_with_index do |item, index|
-      this_one = item.dig :attributes, attr
-      next_one = json_body.dig :data, index + 1, :attributes, attr
+      return if json_body[:data].last == item
 
-      return unless this_one && next_one
+      this_one = item[:attributes][attr]
+      next_one = json_body[:data][index + 1][:attributes][attr]
 
       if direction == :asc
         expect(this_one).to be <= next_one
