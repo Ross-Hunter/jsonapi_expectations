@@ -26,6 +26,8 @@ expect_record model, type: 'people' # can set jsonapi type
 
 expect_record_absent hidden_model # infer type from model class
 
+expect_records_sorted_by :ranking, :desc # defaut is :asc
+
 find_record model # grab the record for more in-depth testing of the response
 
 expect_item_count 4 # the number of items underneath the `data` key
@@ -36,10 +38,11 @@ Using these helpers a spec might look something like this
 
 ```ruby
 describe 'widgets' do
-  let(:organization) { FactoryGirl.create :organization }
-  let(:widget) { FactoryGirl.create :widget, organization: organization }
+  let(:org) { FactoryGirl.create :organization }
+  let(:widgets) { FactoryGirl.create_list :widget, 4, organization: org }
+  let(:widget) { widgets.first }
   let(:widget_attributes) { { name: 'foo' } }
-  let(:widget_relations) { { 'organization' => { data: { id:  organization.id } } }
+  let(:widget_relations) { { 'organization' => { data: { id:  org.id } } }
 
   example 'creating a widget' do
     post widgets_path, params: { data: { attributes: widget_attributes,
@@ -47,17 +50,20 @@ describe 'widgets' do
     expect_status :created
     expect_attributes name: widget_attributes[:name]
     expect_relationship key: 'organization',
-                        link: organization_path(organization.id)
+                        link: organization_path(org.id)
   end
 
   example 'getting widgets with included organization' do
+    widgets
     get widgets_path, params: { include: 'organization' }
 
     expect_status :ok
     expect_record widget
     expect_record organization, included: true
+    expect_records_sorted_by :price
+
     found_widget = find_record widget
-    found_organization = find_record organization, included: true
+    found_organization = find_record org, included: true
     expect(found_widget.organization).to eq(found_organization)
   end
 end
