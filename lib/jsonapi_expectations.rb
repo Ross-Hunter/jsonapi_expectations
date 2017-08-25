@@ -127,12 +127,11 @@ module JsonapiExpectations
                  json_body[:data]
                end
     expect_valid_data location
-    location.select do |item|
+    location.detect do |item|
       jsonapi_match? record, item, opts[:type]
-    end.first
+    end
   end
 
-  # This will go away in the 0.1.0 release
   # TODO: deprecate these
   alias expect_attributes_in_list expect_attributes
   alias expect_attributes_absent_in_list expect_attributes_absent
