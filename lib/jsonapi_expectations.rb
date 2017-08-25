@@ -75,20 +75,11 @@ module JsonapiExpectations
     expect_json_sizes data: number
   end
 
-  def expect_record find_me, opts = {}
-    opts[:type] ||= jsonapi_type find_me
-    location = if opts[:included]
-                 json_body[:included]
-               else
-                 json_body[:data]
-               end
-    expect_valid_data location
-    found = location.detect do |item|
-      jsonapi_match? find_me, item, opts[:type]
-    end
+  def expect_record record, opts = {}
+    found = find_record record, opts
     expect(found).to be_truthy
   rescue RSpec::Expectations::ExpectationNotMetError
-    msg = "Expected #{find_me} to be present in json response"
+    msg = "Expected #{record} to be present in json response"
     raise Exceptions::ExpectationError, msg
   end
 
@@ -129,7 +120,7 @@ module JsonapiExpectations
   end
 
   def find_record record, opts = {}
-    opts[:type] ||= jsonapi_type(record)
+    opts[:type] ||= jsonapi_type record
     location = if opts[:included]
                  json_body[:included]
                else
