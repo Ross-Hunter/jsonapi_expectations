@@ -87,6 +87,18 @@ RSpec.configure do |config|
 end
 ```
 
+## Alternatives
+
+Check out [jsonapi-rspec](https://github.com/jsonapi-rb/jsonapi-rspec). It looks to be the same idea, but it uses actual rspec matchers so expectations look like this:
+
+`expect(document['data']).to have_attribute(:name).with_value('Lucas')`
+
+`jsonapi_expectations` is a little more "magical" and the same expectation is written like this:
+
+`expect_attributes name: 'Lucas'`
+
+Choose which one works best for you!
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/Ross-Hunter/jsonapi_expectations. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
