@@ -99,19 +99,28 @@ module JsonapiExpectations
     raise Exceptions::ExpectationError, msg
   end
 
-  def expect_records_sorted_by attr, direction = :asc
+  def expect_records_sorted_by attr, opts = {}
+    direction = opts.fetch :direction, :asc
+    allow_nils = opts.fetch :allow_nils, false
+
     json_body[:data].each_with_index do |item, index|
-      return if json_body[:data].last == item
+      return if item == json_body[:data].last
 
       this_one = item[:attributes][attr]
       next_one = json_body[:data][index + 1][:attributes][attr]
+
+      unless this_one && next_one
+        return if allow_nils
+        msg = "Expected response to be sorted by #{attr} #{direction}, but some attribues were nil"
+        raise Exceptions::ExpectationError, msg
+      end
 
       if direction == :asc
         expect(this_one).to be <= next_one
       elsif direction == :desc
         expect(next_one).to be <= this_one
       else
-        raise "2nd argument needs to be :asc or :desc"
+        raise "Direction option needs to be :asc or :desc"
       end
     end
   rescue RSpec::Expectations::ExpectationNotMetError

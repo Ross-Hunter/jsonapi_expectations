@@ -13,12 +13,12 @@ RSpec.describe JsonapiExpectations do
       let(:json_body) { JSON_BODY_ASC }
 
       example 'expect sorted asc is good' do
-        expect_records_sorted_by :title, :asc
+        expect_records_sorted_by :title, direction: :asc
       end
 
       example 'expect sorted desc throws error' do
         expect{
-          expect_records_sorted_by :title, :desc
+          expect_records_sorted_by :title, direction: :desc
         }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
       end
     end
@@ -27,12 +27,12 @@ RSpec.describe JsonapiExpectations do
       let(:json_body) { JSON_BODY_DESC }
 
       example 'expect sorted desc is good' do
-        expect_records_sorted_by :title, :desc
+        expect_records_sorted_by :title, direction: :desc
       end
 
       example 'expect sorted asc throws error' do
         expect{
-          expect_records_sorted_by :title, :asc
+          expect_records_sorted_by :title, direction: :asc
         }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
       end
     end
