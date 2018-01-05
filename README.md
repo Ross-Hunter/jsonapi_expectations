@@ -26,7 +26,7 @@ expect_record model, type: 'people' # can set jsonapi type
 
 expect_record_absent hidden_model # infer type from model class
 
-expect_records_sorted_by :ranking, :desc # defaut is :asc
+expect_records_sorted_by :ranking, direction: :desc # defaut is :asc
 
 find_record model # grab the record for more in-depth testing of the response
 
