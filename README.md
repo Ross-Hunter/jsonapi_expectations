@@ -34,7 +34,7 @@ expect_item_count 4 # the number of items underneath the `data` key
 ```
 
 
-Using these helpers a spec might look something like this
+Using these matchers ([along with these request spec helpers](https://gist.github.com/Ross-Hunter/a14ff663d79b42dfec5d2a7c3b94c4b0)) a spec might look something like this
 
 ```ruby
 describe 'widgets' do
@@ -45,8 +45,8 @@ describe 'widgets' do
   let(:widget_relations) { { organization: { data: { id: org.id } } }
 
   example 'creating a widget' do
-    post widgets_path, params: { data: { attributes: widget_attributes,
-                                         relationships: widget_relations } }
+    authed_post widgets_path, params: { data: { attributes: widget_attributes,
+                                                relationships: widget_relations } }
     expect_status :created
     expect_attributes name: widget_attributes[:name]
     expect_relationship key: 'organization',
@@ -55,7 +55,7 @@ describe 'widgets' do
 
   example 'getting widgets with included organization' do
     widgets
-    get widgets_path, params: { include: 'organization' }
+    authed_get widgets_path, params: { include: 'organization' }
 
     expect_status :ok
     expect_record widget
