@@ -164,36 +164,75 @@ RSpec.describe JsonapiExpectations do
   end
 
   describe 'expect_record' do
-    context 'when present' do
-      let(:record) { Article.new id: 1 }
-      let(:included) { People.new id: 9 }
+    context 'array response' do
+      context 'when present' do
+        let(:record) { Article.new id: 1 }
+        let(:included) { People.new id: 9 }
 
-      example 'finds it by type and id' do
-        expect_record record
+        example 'finds it by type and id' do
+          expect_record record
+        end
+
+        example 'can explicitly set type' do
+          expect_record record, type: 'articles'
+        end
+
+        example 'can find included records' do
+          expect_record included, type: 'people', included: true
+        end
       end
 
-      example 'can explicitly set type' do
-        expect_record record, type: 'articles'
-      end
+      context 'when absent' do
+        let(:record) { Article.new id: 99999 }
 
-      example 'can find included records' do
-        expect_record included, type: 'people', included: true
+        example 'finds it by type and id' do
+          expect{
+            expect_record record
+          }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+        end
+
+        example 'can explicitly set type' do
+          expect{
+            expect_record record, type: 'articles'
+          }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+        end
       end
     end
 
-    context 'when absent' do
-      let(:record) { Article.new id: 99999 }
+    context 'single item response' do
+      let(:json_body) { JSON_BODY_SINGLE }
 
-      example 'finds it by type and id' do
-        expect{
+      context 'when present' do
+        let(:record) { Article.new id: 1 }
+        let(:included) { People.new id: 9 }
+
+        example 'finds it by type and id' do
           expect_record record
-        }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+        end
+
+        example 'can explicitly set type' do
+          expect_record record, type: 'articles'
+        end
+
+        example 'can find included records' do
+          expect_record included, type: 'people', included: true
+        end
       end
 
-      example 'can explicitly set type' do
-        expect{
-          expect_record record, type: 'articles'
-        }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+      context 'when absent' do
+        let(:record) { Article.new id: 99999 }
+
+        example 'finds it by type and id' do
+          expect{
+            expect_record record
+          }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+        end
+
+        example 'can explicitly set type' do
+          expect{
+            expect_record record, type: 'articles'
+          }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+        end
       end
     end
   end

@@ -136,7 +136,8 @@ module JsonapiExpectations
                  json_body[:data]
                end
     expect_valid_data location
-    location.detect do |item|
+
+    [location].flatten.detect do |item|
       jsonapi_match? record, item, opts[:type]
     end
   end
