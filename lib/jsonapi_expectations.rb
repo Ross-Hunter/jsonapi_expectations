@@ -120,7 +120,7 @@ module JsonapiExpectations
       elsif direction == :desc
         expect(next_one).to be <= this_one
       else
-        raise "Direction option needs to be :asc or :desc"
+        raise 'Direction option needs to be :asc or :desc'
       end
     end
   rescue RSpec::Expectations::ExpectationNotMetError

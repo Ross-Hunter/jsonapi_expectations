@@ -17,9 +17,9 @@ RSpec.describe JsonapiExpectations do
       end
 
       example 'expect sorted desc throws error' do
-        expect{
+        expect do
           expect_records_sorted_by :title, direction: :desc
-        }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+        end.to raise_error JsonapiExpectations::Exceptions::ExpectationError
       end
     end
 
@@ -31,9 +31,9 @@ RSpec.describe JsonapiExpectations do
       end
 
       example 'expect sorted asc throws error' do
-        expect{
+        expect do
           expect_records_sorted_by :title, direction: :asc
-        }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+        end.to raise_error JsonapiExpectations::Exceptions::ExpectationError
       end
     end
   end
@@ -44,23 +44,23 @@ RSpec.describe JsonapiExpectations do
         example 'can find attributes' do
           expect_attributes title: 'JSON API paints my bikeshed!',
                             published: '1'
-          expect_attributes title: "It's Party Time!",
+          expect_attributes title: 'Party Time!',
                             published: '1'
         end
       end
 
       context 'when absent' do
         example 'raises error if not found' do
-          expect{
+          expect do
             expect_attributes title: 'foo'
-          }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+          end.to raise_error JsonapiExpectations::Exceptions::ExpectationError
         end
 
         example 'raises error on partial match' do
-          expect{
+          expect do
             expect_attributes title: 'foo',
                               published: '1'
-          }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+          end.to raise_error JsonapiExpectations::Exceptions::ExpectationError
         end
       end
     end
@@ -76,9 +76,9 @@ RSpec.describe JsonapiExpectations do
 
       context 'when absent' do
         example 'raises error if not found' do
-          expect{
+          expect do
             expect_attributes title: 'foo'
-          }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+          end.to raise_error JsonapiExpectations::Exceptions::ExpectationError
         end
       end
     end
@@ -88,9 +88,9 @@ RSpec.describe JsonapiExpectations do
     context 'array response' do
       context 'when present' do
         example 'raises error if found' do
-          expect{
+          expect do
             expect_attributes_absent :title
-          }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+          end.to raise_error JsonapiExpectations::Exceptions::ExpectationError
         end
       end
       context 'when absent' do
@@ -104,9 +104,9 @@ RSpec.describe JsonapiExpectations do
 
       context 'when present' do
         example 'raises error if found' do
-          expect{
+          expect do
             expect_attributes_absent :title
-          }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+          end.to raise_error JsonapiExpectations::Exceptions::ExpectationError
         end
       end
       context 'when absent' do
@@ -144,9 +144,9 @@ RSpec.describe JsonapiExpectations do
       end
 
       example 'raises error if not found' do
-        expect{
+        expect do
           expect_relationship key: 'widgets', id: '24'
-        }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+        end.to raise_error JsonapiExpectations::Exceptions::ExpectationError
       end
     end
   end
@@ -157,9 +157,9 @@ RSpec.describe JsonapiExpectations do
     end
 
     example 'raises an error if not correct' do
-      expect{
+      expect do
         expect_item_count 9999
-      }.to raise_error RSpec::Expectations::ExpectationNotMetError
+      end.to raise_error RSpec::Expectations::ExpectationNotMetError
     end
   end
 
@@ -186,15 +186,15 @@ RSpec.describe JsonapiExpectations do
         let(:record) { Article.new id: 99999 }
 
         example 'finds it by type and id' do
-          expect{
+          expect do
             expect_record record
-          }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+          end.to raise_error JsonapiExpectations::Exceptions::ExpectationError
         end
 
         example 'can explicitly set type' do
-          expect{
+          expect do
             expect_record record, type: 'articles'
-          }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+          end.to raise_error JsonapiExpectations::Exceptions::ExpectationError
         end
       end
     end
@@ -223,15 +223,15 @@ RSpec.describe JsonapiExpectations do
         let(:record) { Article.new id: 99999 }
 
         example 'finds it by type and id' do
-          expect{
+          expect do
             expect_record record
-          }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+          end.to raise_error JsonapiExpectations::Exceptions::ExpectationError
         end
 
         example 'can explicitly set type' do
-          expect{
+          expect do
             expect_record record, type: 'articles'
-          }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+          end.to raise_error JsonapiExpectations::Exceptions::ExpectationError
         end
       end
     end
@@ -250,9 +250,9 @@ RSpec.describe JsonapiExpectations do
       let(:record) { Article.new id: 1 }
 
       example 'searches by type, id, and link' do
-        expect{
+        expect do
           expect_record_absent record
-        }.to raise_error JsonapiExpectations::Exceptions::ExpectationError
+        end.to raise_error JsonapiExpectations::Exceptions::ExpectationError
       end
     end
   end
@@ -271,7 +271,7 @@ RSpec.describe JsonapiExpectations do
       example 'can find included objects' do
         found = find_record included, type: 'people', included: true
         expect(found).to be
-        expect(found[:attributes][:"first-name"]).to eq('Dan')
+        expect(found[:attributes][:'first-name']).to eq('Dan')
       end
     end
 
